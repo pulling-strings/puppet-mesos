@@ -29,7 +29,7 @@ class mesos::install {
   exec{'download mesos egg':
     command => "wget -P /tmp ${url}/${egg}",
     user    => 'root',
-    path    => ['/usr/bin','/bin'],
+    path    => ['/usr/bin','/bin','/sbin'],
   } ->
 
   exec{'install mesos egg':
