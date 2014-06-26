@@ -12,15 +12,18 @@ class mesos::install {
   $download = regsubst($deb,'\+', '%2B')
 
   exec{'download mesos deb':
-    command => "wget -P /tmp ${url}/${download}",
+    command => "wget -P /usr/src ${url}/${download}",
     user    => 'root',
     path    => ['/usr/bin','/bin'],
+    creates => "/usr/src/${deb}",
+    tries   => 3,
+    timeout => 600
   } ->
 
   exec{'install mesos deb':
-    command => "dpkg -i /tmp/${deb}",
+    command => "dpkg -i /usr/src/${deb}",
     user    => 'root',
-    path    => ['/usr/bin','/bin'],
+    path    => ['/usr/bin','/bin','/sbin'],
     require => Package['default-jre', 'zookeeperd']
   }
 
@@ -30,6 +33,9 @@ class mesos::install {
     command => "wget -P /tmp ${url}/${egg}",
     user    => 'root',
     path    => ['/usr/bin','/bin','/sbin'],
+    creates => "/usr/src/${egg}",
+    tries   => 3,
+    timeout => 600
   } ->
 
   exec{'install mesos egg':
