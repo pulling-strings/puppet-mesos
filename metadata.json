@@ -1,0 +1,17 @@
+{
+  "name": "puppet-mesos",
+  "version": "0.0.1",
+  "author": "narkisr",
+  "summary": "Mesos setup",
+  "license": "Apache 2.0",
+  "source": "git://github.com/narkisr/puppet-mesos.git",
+  "project_page": "https://github.com/narkisr/puppet-mesos",
+  "issues_url": "https://github.com/narkisr/puppet-mesos/issues",
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "version_range": ">= 1.0.0"
+    }
+  ]
+}
+
