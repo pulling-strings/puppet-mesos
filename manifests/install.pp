@@ -11,14 +11,25 @@ class mesos::install {
   $deb  = "mesos_${version}~ubuntu14.04+1_amd64.deb"
   $download = regsubst($deb,'\+', '%2B')
 
-  exec{'download mesos deb':
-    command => "wget -P /usr/src ${url}/${download}",
-    user    => 'root',
-    path    => ['/usr/bin','/bin'],
-    creates => "/usr/src/${deb}",
-    tries   => 3,
-    timeout => 600
-  } ->
+  if(environment!='dev') {
+    exec{'download mesos deb':
+      command => "wget -P /usr/src ${url}/${download}",
+      user    => 'root',
+      path    => ['/usr/bin','/bin'],
+      creates => "/usr/src/${deb}",
+      tries   => 2,
+      timeout => 1200
+    }
+  } else {
+    exec{'download mesos deb':
+      command => "cp /vagrant/${deb} /usr/src/",
+      user    => 'root',
+      path    => ['/usr/bin','/bin'],
+      creates => "/usr/src/${deb}",
+    }
+  }
+
+  Exec['download mesos deb'] -> Exec['install mesos deb']
 
   exec{'install mesos deb':
     command => "dpkg -i /usr/src/${deb}",
@@ -30,16 +41,16 @@ class mesos::install {
   $egg = "mesos-${version}_rc2-py2.7-linux-x86_64.egg "
 
   exec{'download mesos egg':
-    command => "wget -P /tmp ${url}/${egg}",
+    command => "wget -P /usr/src ${url}/${egg}",
     user    => 'root',
     path    => ['/usr/bin','/bin','/sbin'],
     creates => "/usr/src/${egg}",
-    tries   => 3,
-    timeout => 600
+    tries   => 2,
+    timeout => 1200
   } ->
 
   exec{'install mesos egg':
-    command => "easy_install /tmp/${egg}",
+    command => "easy_install /usr/src/${egg}",
     user    => 'root',
     path    => '/usr/bin',
     require => Package['python-setuptools', 'python-protobuf']
