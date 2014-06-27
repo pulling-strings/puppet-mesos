@@ -1,26 +1,37 @@
 # setting up mesos slave
-class mesos::slave {
-
+class mesos::slave($ip=false) {
+  validate_string($ip)
   include mesos::install
+
+  Class['mesos::install'] -> Service<||>
+  Class['mesos::install'] -> File_line<||>
+  Class['mesos::install'] -> File<||>
+
 
   service{'zookeeper':
     ensure    => stopped,
     enable    => false,
     hasstatus => true,
-    require   => Class['mesos::install']
-  }
+  } ->
 
   service{'mesos-master':
     ensure    => stopped,
     enable    => false,
     hasstatus => true,
-    require   => Class['mesos::install']
   } ->
 
   service{'mesos-slave':
     ensure    => running,
     enable    => true,
     hasstatus => true,
-    require   => Class['mesos::install']
   }
+
+  file { '/etc/mesos/zk':
+    ensure  => file,
+    mode    => '0644',
+    content => template('mesos/zk.erb'),
+    owner   => root,
+    group   => root,
+  } ~> Service['mesos-slave']
+
 }
