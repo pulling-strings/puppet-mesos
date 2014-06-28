@@ -11,12 +11,23 @@ class mesos::install {
   $deb  = "mesos_${version}~ubuntu14.04+1_amd64.deb"
   $download = regsubst($deb,'\+', '%2B')
 
-  if(environment!='dev') {
+  $egg = "mesos-${version}_rc2-py2.7-linux-x86_64.egg "
+
+  if($environment!='dev') {
     exec{'download mesos deb':
       command => "wget -P /usr/src ${url}/${download}",
       user    => 'root',
       path    => ['/usr/bin','/bin'],
       creates => "/usr/src/${deb}",
+      tries   => 2,
+      timeout => 1200
+    }
+
+    exec{'download mesos egg':
+      command => "wget -P /usr/src ${url}/${egg}",
+      user    => 'root',
+      path    => ['/usr/bin','/bin','/sbin'],
+      creates => "/usr/src/${egg}",
       tries   => 2,
       timeout => 1200
     }
@@ -27,9 +38,17 @@ class mesos::install {
       path    => ['/usr/bin','/bin'],
       creates => "/usr/src/${deb}",
     }
+
+    exec{'download mesos egg':
+      command => "cp /vagrant/${egg} /usr/src/",
+      user    => 'root',
+      path    => ['/usr/bin','/bin'],
+      creates => "/usr/src/${egg}",
+    }
   }
 
   Exec['download mesos deb'] -> Exec['install mesos deb']
+  Exec['download mesos egg'] -> Exec['install mesos egg']
 
   exec{'install mesos deb':
     command => "dpkg -i /usr/src/${deb}",
@@ -37,17 +56,6 @@ class mesos::install {
     path    => ['/usr/bin','/bin','/sbin'],
     require => Package['default-jre', 'zookeeperd']
   }
-
-  $egg = "mesos-${version}_rc2-py2.7-linux-x86_64.egg "
-
-  exec{'download mesos egg':
-    command => "wget -P /usr/src ${url}/${egg}",
-    user    => 'root',
-    path    => ['/usr/bin','/bin','/sbin'],
-    creates => "/usr/src/${egg}",
-    tries   => 2,
-    timeout => 1200
-  } ->
 
   exec{'install mesos egg':
     command => "easy_install /usr/src/${egg}",
