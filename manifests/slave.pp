@@ -34,4 +34,11 @@ class mesos::slave($ip=false) {
     group   => root,
   } ~> Service['mesos-slave']
 
+  file { '/etc/default/mesos-slave':
+    ensure  => file,
+    mode    => '0644',
+    content => template('mesos/slave-default.erb'),
+    owner   => root,
+    group   => root,
+  } ~> Service['mesos-slave']
 }
