@@ -11,9 +11,19 @@ class mesos::hadoop::hdfs(
   $dfs_name_dir = '/var/lib/hadoop/name'
 ) {
   include mesos::hadoop::cloudera
+  include cdh::hadoop::datanode
+
+  file{$datanode_mounts:
+    ensure  => directory,
+    owner   => 'hdfs',
+    group   => 'hdfs',
+    require => File['/var/lib/hadoop/', '/var/lib/hadoop/data']
+  } -> Class['cdh::hadoop::datanode']
 
   file{['/var/lib/hadoop/', '/var/lib/hadoop/data']:
     ensure => directory,
+    owner  => 'hdfs',
+    group  => 'hdfs'
   } ->
 
   class { 'cdh::hadoop':
