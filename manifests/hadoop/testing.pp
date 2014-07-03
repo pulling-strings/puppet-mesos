@@ -3,7 +3,7 @@ class mesos::hadoop::testing {
   file { '/usr/local/bin/sample-runjob.sh':
     ensure=> file,
     mode  => 'a+x',
-    source=> 'puppet:///modules/mesos/runjon.sh',
+    source=> 'puppet:///modules/mesos/runjob.sh',
     owner => root,
     group => root,
   }
