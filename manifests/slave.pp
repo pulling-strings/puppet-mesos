@@ -1,5 +1,5 @@
 # setting up mesos slave
-class mesos::slave($ip=false, $resources='ports:[3000-5000];cpus:2;mem:1024;disk:20000') {
+class mesos::slave($ip=false, $resources='ports:[30000-50000];cpus:2;mem:1024;disk:20000') {
   validate_string($ip)
   include mesos::install
 
