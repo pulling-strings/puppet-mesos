@@ -15,4 +15,12 @@ class mesos::hadoop::testing {
     owner => root,
     group => root,
   }
+
+  file { '/usr/local/bin/sample-setup.sh':
+    ensure=> file,
+    mode  => 'a+x',
+    source=> 'puppet:///modules/mesos/setup.sh',
+    owner => root,
+    group => root,
+  }
 }
