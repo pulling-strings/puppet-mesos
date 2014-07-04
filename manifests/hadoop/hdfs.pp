@@ -8,16 +8,18 @@ class mesos::hadoop::hdfs(
     '/var/lib/hadoop/data/b',
     '/var/lib/hadoop/data/c'
   ],
-  $dfs_name_dir = '/var/lib/hadoop/name'
+  $dfs_name_dir = '/var/lib/hadoop/name',
+  $master = 'localhost'
 ) {
 
   include mesos::hadoop::cloudera
   include cdh::hadoop::datanode
 
   class {'cdh::hadoop':
-    namenode_hosts     => $namenode_hosts,
-    datanode_mounts    => $datanode_mounts,
-    dfs_name_dir       => $dfs_name_dir,
+    namenode_hosts  => $namenode_hosts,
+    datanode_mounts => $datanode_mounts,
+    dfs_name_dir    => $dfs_name_dir,
+    master          => $master
   } ->
 
   file{['/var/lib/hadoop/', '/var/lib/hadoop/data']:
