@@ -41,4 +41,8 @@ class mesos::slave($ip=false, $resources='ports:[30000-50000];cpus:2;mem:1024;di
     owner   => root,
     group   => root,
   } ~> Service['mesos-slave']
+
+  file{'/tmp/mesos/meta/slaves/latest':
+    ensure  => absent
+  } ~> Service['mesos-slave']
 }
