@@ -1,11 +1,55 @@
 # Intro 
 
-Puppet Module for setting up Mesos clusters
+Puppet Module for setting up Mesos clusters.
 
 # Usage
 
+On the master side:
+
 ```puppet
-include mesos
+$hosts = {
+  '192.168.1.10' => 'master.local master',
+  '192.168.1.11' => 'slave.local slave',
+}
+
+node 'master.local' {
+  class{'mesos::master':
+    ip => '192.168.1.10'
+  }
+
+  class{'mesos::hosts':
+    hosts => $hosts
+  }
+
+  class{'mesos::hadoop::hdfs':
+    name_node      => true,
+    namenode_hosts => ['master.local'],
+    master         => 'master.local'
+  }
+
+  include 'mesos::hadoop::jobtracker'
+  include 'mesos::hadoop::testing'
+}
+```
+On the slave side:
+
+```puppet
+node 'slave.local' {
+  class{'mesos::slave':
+    ip => '192.168.1.10',
+    resources  => 'ports:[30000-50000];cpus:2;mem:1048;disk:20000'
+  }
+
+  class{'mesos::hosts':
+    hosts => $hosts
+  }
+
+  class{'mesos::hadoop::hdfs':
+    name_node       => false,
+    namenode_hosts  => ['master.local'],
+    master          => 'master.local'
+  }
+}
 ```
 
 # Copyright and license
